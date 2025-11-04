@@ -1,0 +1,23 @@
+{
+  "name": "notednote",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidAdam1323/notednote.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DavidAdam1323/notednote/issues"
+  },
+  "homepage": "https://github.com/DavidAdam1323/notednote#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
