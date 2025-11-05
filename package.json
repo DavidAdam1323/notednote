@@ -18,6 +18,7 @@
   "homepage": "https://github.com/DavidAdam1323/notednote#readme",
   "description": "",
   "dependencies": {
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "uuid": "^13.0.0"
   }
 }
