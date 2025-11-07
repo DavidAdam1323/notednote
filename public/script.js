@@ -54,7 +54,13 @@ function displayNotes(notes) {
     <div class="note-item">
       <h3>${escapeHTML(note.title)}</h3>
       <p>${escapeHTML(note.content)}</p>
-      <small>Created: ${new Date(note.createdAt).toLocaleString()}</small>
+      <div class="note-meta">
+        <small>Created: ${new Date(note.createdAt).toLocaleString()}</small>
+      </div>
+      <div class="note-actions">
+        <button class="edit-btn" onclick="">Edit</button>
+        <button class="delete-btn" onclick="deleteNote('${note.id}')">Delete</button>
+      </div>
     </div>
     `;
   });
@@ -101,3 +107,34 @@ noteForm.addEventListener("submit", async function (event) {
     alert("Failed to create note. Is the server running?");
   }
 });
+
+// Function to delete note
+async function deleteNote(noteId) {
+  console.log(`Trying to delete ${noteId}`);
+
+  const confirmed = confirm("Are you sure you want to delete this note?");
+  if (!confirmed) {
+    console.log("Delete cancelled by user");
+    return;
+  }
+
+  try {
+    const response = await fetch(`/data/notes/${noteId}`, { method: "DELETE" });
+
+    if(response.ok) {
+      const result = await response.json();
+      console.log("Note deleted successfully:", result);
+      alert("Note deleted successfully!");
+
+      loadNotes();
+    } else {
+      const errorData = await response.json();
+      alert("Error:" + errorData);
+    }
+  } catch (error) {
+    console.error("Failed to delete note:", error);
+    alert("Failed to delete note. Please try again.");
+  }
+}
+
+window.deleteNote = deleteNote;
