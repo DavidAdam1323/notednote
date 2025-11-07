@@ -3,7 +3,6 @@ const path = require("path");
 const fs = require("fs");
 const { v4: uuidv4 } = require("uuid");
 
-
 const app = express();
 const PORT = 3000;
 
@@ -35,7 +34,7 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// GET notes
+// GET (all notes)
 app.get("/data/notes", (req, res) => {
   try {
     const notes = readNotes();
@@ -45,13 +44,32 @@ app.get("/data/notes", (req, res) => {
   }
 });
 
-// POST notes
+// GET (single note)
+app.get("/data/notes/:id", (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const notes = readNotes(); 
+    const noteIndex = notes.findIndex((note) => note.id === id);
+
+    if (!noteIndex) {
+      return res.status(404).json({ error: "Note not found" });
+    }
+
+    res.json(notes[noteIndex]);
+  } catch (error) {
+    console.error("Error fetching note:", error);
+    res.status(500).json({ error: "Failed to fetch note" });
+  }
+});
+
+// POST (create notes)
 app.post("/data/notes", (req, res) => {
   try {
     const { title, content } = req.body;
 
     if (!title || !content) {
-      return res.status(400).json({error: "Title and content are required"})
+      return res.status(400).json({ error: "Title and content are required" });
     }
     const notes = readNotes();
 
@@ -69,6 +87,59 @@ app.post("/data/notes", (req, res) => {
     res.status(201).json(newNote);
   } catch (error) {
     res.status(500).json({ error: "Faild to create note" });
+  }
+});
+
+// PUT (update note)
+app.put("/data/notes/:id", (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, content } = req.body;
+
+    if (!title || !content) {
+      return res.status(400).json({ error: "Title and content are required" });
+    }
+
+    const notes = readNotes();
+    const noteIndex = notes.findIndex((note) => note.id === id);
+
+    if (noteIndex === -1) {
+      return res.status(404).json({ error: "Note not found" });
+    }
+
+    notes[noteIndex] = {
+      ...notes[noteIndex],
+      title,
+      content,
+      updatedAt: new Date().toISOString(),
+    };
+
+    writeNotes(notes);
+    res.json(notes[noteIndex]);
+  } catch (error) {
+    console.error("Error updating note:", error);
+    res.status(500).json({ error: "Failed to update note" });
+  }
+});
+
+// DELETE (delete note)
+app.delete("/data/notes/:id", (req, res) => {
+  try {
+    const { id } = req.params;
+    const notes = readNotes();
+    const noteIndex = notes.findIndex((note) => note.id === id);
+
+    if (noteIndex === -1) {
+      return res.status(404).json({ error: "Note not found" });
+    }
+
+    notes.splice(noteIndex, 1);
+    writeNotes(notes);
+
+    res.json({ message: "Note successfully deleted" });
+  } catch (error) {
+    console.error("Error deleting note:", error);
+    res.status(500).json({ error: "Failed to delete note" });
   }
 });
 
