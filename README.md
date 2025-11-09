@@ -6,7 +6,7 @@ A simple and elegant full-stack note-taking application built with Node.js, Expr
 
 > _“Built as part of a full-stack development learning challenge during week 7 of my Step8up bootcamp.”_
 
-## ☑️ How to Use
+## ℹ️ How to Use
 
 ### Creating a Note
 1. Fill in the "Note title" field
@@ -47,7 +47,7 @@ notes-app/
 └── .gitignore             # Git ignore file
 ```
 
-## ℹ️ Getting Started
+## ☑️ Getting Started
 
 ### Prerequisites
 
