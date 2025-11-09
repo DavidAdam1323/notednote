@@ -92,8 +92,7 @@ notes-app/
 - **Error Handling**: Comprehensive error responses
 - **Data Persistence**: JSON file storage
 - **CORS Ready**: Configured for web requests
-<br />
-<br />
+
 ---
 
 ### Let's connect!
