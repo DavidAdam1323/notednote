@@ -52,7 +52,7 @@ app.get("/data/notes/:id", (req, res) => {
     const notes = readNotes(); 
     const noteIndex = notes.findIndex((note) => note.id === id);
 
-    if (!noteIndex) {
+    if (noteIndex === -1) {
       return res.status(404).json({ error: "Note not found" });
     }
 

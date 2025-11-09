@@ -133,3 +133,10 @@ button:hover {
 .delete-btn {
   width: 80px;
 }
+
+.edit-mode {
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  padding: 10px;
+  border-radius: 8px;
+}

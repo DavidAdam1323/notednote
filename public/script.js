@@ -3,6 +3,8 @@ const noteTitle = document.getElementById("noteTitle");
 const noteContent = document.getElementById("noteContent");
 const notesContainer = document.querySelector(".notes-container");
 
+let currentEditId = null;
+
 // console.log("Form found:", noteForm);
 // console.log("Title input:", noteTitle);
 // console.log("Content input:", noteContent);
@@ -58,7 +60,7 @@ function displayNotes(notes) {
         <small>Created: ${new Date(note.createdAt).toLocaleString()}</small>
       </div>
       <div class="note-actions">
-        <button class="edit-btn" onclick="">Edit</button>
+        <button class="edit-btn" onclick="editNote('${note.id}')">Edit</button>
         <button class="delete-btn" onclick="deleteNote('${note.id}')">Delete</button>
       </div>
     </div>
@@ -82,8 +84,17 @@ noteForm.addEventListener("submit", async function (event) {
   console.log("Creating note:", { title, content });
 
   try {
-    const response = await fetch("/data/notes", {
-      method: "POST",
+    let response;
+    let url = "/data/notes";
+    let method = "POST";
+
+    if (currentEditId) {
+      url = `/data/notes/${currentEditId}`;
+      method = "PUT";
+    }
+
+    response = await fetch(url, {
+      method: method,
       headers: {
         "Content-Type": "application/json",
       },
@@ -91,11 +102,16 @@ noteForm.addEventListener("submit", async function (event) {
     });
 
     if (response.ok) {
-      const newNote = await response.json();
-      console.log("Note created successfully!");
-      alert("Note created successfully!");
+      const result = await response.json();
+      console.log(currentEditId ? "Note updated!" : "Note created!");
+      alert(currentEditId ? "Note updated successfully!" : "Note created successfully!");
 
       noteForm.reset();
+      currentEditId = null;
+      const submitBtn = noteForm.querySelector("button[type='submit']");
+      submitBtn.textContent = "Save Note";
+      noteForm.classList.remove("edit-mode");
+
       loadNotes();
 
     } else {
@@ -107,6 +123,44 @@ noteForm.addEventListener("submit", async function (event) {
     alert("Failed to create note. Is the server running?");
   }
 });
+
+// Function to edit a note
+async function editNote(noteId) {
+  console.log(`Starting to edit note: ${noteId}`);
+
+  try {
+    const response = await fetch(`/data/notes/${noteId}`);
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        alert("Note not found!");
+      } else {
+        throw new Error("Failed to load note");
+      }
+      return;
+    }
+    
+    const noteToEdit = await response.json();
+
+    noteTitle.value = noteToEdit.title;
+    noteContent.value = noteToEdit.content;
+
+    currentEditId = noteId;
+
+    const submitBtn = noteForm.querySelector("button[type='submit']");
+    submitBtn.textContent = "Update Note";
+
+    noteForm.classList.add("edit-mode");
+    noteForm.scrollIntoView({ behavior: "smooth" });
+    
+    console.log("Note loaded for editing:", noteToEdit);
+  } catch (error) {
+    console.error("Error loading note for editing:", error);
+    alert("Failed to load note for editing");
+  }
+}
+
+window.editNote = editNote;
 
 // Function to delete note
 async function deleteNote(noteId) {
